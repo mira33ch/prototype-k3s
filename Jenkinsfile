@@ -47,8 +47,8 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     sh """
-                        git config --global user.name "mariem"
-                        git config --global user.email "mariem.chaabane@esprit.tn"
+                        git config --global user.name "jenkins-bot"
+                        git config --global user.email "ci-bot@local"
 
                         git add mysql-deploy.yaml frontend-deploy.yaml backend-deploy.yaml
                         git commit -m "🔄 Update deployment image tags to ${IMAGE_TAG}"
