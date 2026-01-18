@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        GIT_REPO = 'https://github.com/mira33ch/prototype-k8s.git'
+        GIT_REPO = 'https://github.com/mira33ch/prototype-k3s.git'
         BRANCH = 'main'
     }
 
