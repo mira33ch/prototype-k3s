@@ -1,0 +1,36 @@
+Pipeline GitOps CD
+Ce dépôt contient le pipeline GitOps de CD utilisé pour déployer l’application portfolio (backend, frontend, MySQL) sur le cluster k3s via Argo CD.
+​
+
+Rôle du Jenkinsfile
+Clone ce dépôt (branche main) en utilisant l’identifiant de credentials Jenkins github.
+​
+
+Met à jour les images dans :
+
+frontend-deploy.yaml → mariem360/portfolio-app-cicd-pipeline-frontend:${IMAGE_TAG}
+
+backend-deploy.yaml → mariem360/portfolio-app-cicd-pipeline-backend:${IMAGE_TAG}
+
+Fait un git add, git commit et git push sur main.
+
+S’il n’y a aucun changement, il affiche “No changes to commit” et le pipeline réussit quand même.
+​
+
+Prérequis
+Jenkins avec :
+
+Git installé.
+
+Un credential github (type « Username with password » ou PAT GitHub).
+​
+
+Une application Argo CD qui pointe sur ce dépôt, la branche main et le bon chemin (dossier des manifests).
+​
+
+Un pipeline CI qui :
+
+Build et push les images Docker avec le tag IMAGE_TAG.
+
+Déclenche ce job CD en lui passant le même IMAGE_TAG.
+​
