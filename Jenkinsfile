@@ -43,20 +43,35 @@ pipeline {
             }
         }
 
-        stage('Commit & Push Changes') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh """
-                        git config --global user.name "jenkins-bot"
-                        git config --global user.email "ci-bot@local"
+       stage('Commit & Push Changes') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'github',
+            usernameVariable: 'GIT_USERNAME',
+            passwordVariable: 'GIT_PASSWORD'
+        )]) {
+            sh """
+                set +e
 
-                        git add mysql-deploy.yaml frontend-deploy.yaml backend-deploy.yaml
-                        git commit -m "🔄 Update deployment image tags to ${IMAGE_TAG}"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mira33ch/prototype-k3s.git ${BRANCH}
-                    """
-                }
-            }
+                git config --global user.name "jenkins-bot"
+                git config --global user.email "ci-bot@local"
+
+                git add mysql-deploy.yaml frontend-deploy.yaml backend-deploy.yaml
+
+                git commit -m "🔄 Update deployment image tags to ${IMAGE_TAG}"
+                COMMIT_STATUS=\$?
+
+                if [ \$COMMIT_STATUS -ne 0 ]; then
+                  echo "No changes to commit (status=\$COMMIT_STATUS)"
+                  exit 0
+                fi
+
+                git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mira33ch/prototype-k3s.git ${BRANCH}
+            """
         }
+    }
+}
+
     }
 
     post {
