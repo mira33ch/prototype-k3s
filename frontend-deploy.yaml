@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mariem360/portfolio-app-cicd-pipeline-frontend:1.0.0-45
+          image: mariem360/portfolio-app-cicd-pipeline-frontend:1.0.0-46
           ports:
             - containerPort: 80
 
