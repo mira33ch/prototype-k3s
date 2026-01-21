@@ -5,10 +5,10 @@ metadata:
   namespace: portfolio
   annotations:
     kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: "portfolio-strip-api-prefix@kubernetescrd"
 spec:
   rules:
-    - host: portfolio.local
-      http:
+    - http:
         paths:
           - path: /api
             pathType: Prefix
