@@ -19,15 +19,21 @@ spec:
           ports:
             - containerPort: 3306
           env:
-            - name: MYSQL_ALLOW_EMPTY_PASSWORD
-              value: "yes"
+            # Use a real password (recommended)
+            - name: MYSQL_ROOT_PASSWORD
+              value: "test_pass"     # TODO change later
             - name: MYSQL_DATABASE
-              value: "database"
-            - name: MYSQL_ROOT_HOST
-              value: "%"
+              value: "Portfolio"
+            # Optional normal user (recommended)
+            - name: MYSQL_USER
+              value: "test"
+            - name: MYSQL_PASSWORD
+              value: "pass"
+
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
+
       volumes:
         - name: mysql-data
           persistentVolumeClaim:
