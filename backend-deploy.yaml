@@ -35,7 +35,7 @@ spec:
 
       containers:
         - name: backend
-          image: mariem360/portfolio-app-cicd-pipeline-backend:1.0.0-49
+          image: mariem360/portfolio-app-cicd-pipeline-backend:1.0.0-57
           ports:
             - containerPort: 8080
           env:
