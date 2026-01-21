@@ -18,21 +18,46 @@ spec:
           image: mysql:8.0
           ports:
             - containerPort: 3306
+
           env:
-            # Use a real password (recommended)
-            - name: MYSQL_ROOT_PASSWORD
-              value: "test_pass"     # TODO change later
             - name: MYSQL_DATABASE
-              value: "Portfolio"
-            # Optional normal user (recommended)
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_DATABASE
+
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_ROOT_PASSWORD
+
             - name: MYSQL_USER
-              value: "test"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USER
+
             - name: MYSQL_PASSWORD
-              value: "pass"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
 
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
+
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD"
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
 
       volumes:
         - name: mysql-data
