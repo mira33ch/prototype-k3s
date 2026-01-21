@@ -13,6 +13,26 @@ spec:
       labels:
         app: backend
     spec:
+      # Wait for MySQL before starting backend
+      initContainers:
+        - name: wait-for-mysql
+          image: mysql:8.0
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for MySQL..."
+              until mysqladmin ping -h mysql -uroot -p"$MYSQL_ROOT_PASSWORD" --silent; do
+                sleep 3
+              done
+              echo "MySQL is up."
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_ROOT_PASSWORD
+
       containers:
         - name: backend
           image: mariem360/portfolio-app-cicd-pipeline-backend:1.0.0-42
@@ -21,10 +41,19 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+
+            # Username/password from Secret (no hardcoding)
             - name: SPRING_DATASOURCE_USERNAME
-              value: "test"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_USER
+
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "pass"
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: MYSQL_PASSWORD
 ---
 apiVersion: v1
 kind: Service
