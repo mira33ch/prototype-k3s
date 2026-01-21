@@ -20,7 +20,7 @@ pipeline {
 
     stage('Update Deployment Files') {
       steps {
-        // Run a real bash script file (no bash -lc '...'), so awk blocks are safe.
+        
         sh label: 'Update images safely (bash)', script: '''
           #!/usr/bin/env bash
           set -euo pipefail
