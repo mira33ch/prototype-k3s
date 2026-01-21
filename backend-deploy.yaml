@@ -16,7 +16,7 @@ spec:
       # Wait for MySQL before starting backend (uses mysql client image)
       initContainers:
         - name: wait-for-mysql
-          image: mysql:8.0
+          image: mariem360/portfolio-app-cicd-pipeline-backend:1.0.0-49
           command:
             - sh
             - -c
@@ -35,7 +35,7 @@ spec:
 
       containers:
         - name: backend
-          image: mariem360/portfolio-app-cicd-pipeline-backend:1.0.0-47
+          image: mariem360/portfolio-app-cicd-pipeline-backend:1.0.0-49
           ports:
             - containerPort: 8080
           env:
