@@ -5,6 +5,11 @@ metadata:
   namespace: portfolio
 spec:
   replicas: 1
+
+  # IMPORTANT: avoid 2 MySQL pods using the same PVC (causes "Unable to lock ibdata1")
+  strategy:
+    type: Recreate
+
   selector:
     matchLabels:
       app: mysql
@@ -53,9 +58,20 @@ spec:
               command:
                 - sh
                 - -c
-                - "mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD"
+                - 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent'
             initialDelaySeconds: 20
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent'
+            initialDelaySeconds: 60
+            periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 6
 
