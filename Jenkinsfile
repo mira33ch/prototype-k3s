@@ -20,8 +20,8 @@ pipeline {
 
     stage('Update Deployment Files') {
       steps {
-        
-        sh label: 'Update images safely (bash)', script: '''
+        sh label: 'Write update script', script: '''
+          cat > update-images.sh <<'BASH'
           #!/usr/bin/env bash
           set -euo pipefail
 
@@ -66,7 +66,13 @@ pipeline {
           grep -n "image:" backend-deploy.yaml || true
           echo "--- frontend-deploy.yaml images ---"
           grep -n "image:" frontend-deploy.yaml || true
+          BASH
+
+          chmod +x update-images.sh
         '''
+
+        
+        sh label: 'Run update script with bash', script: 'bash ./update-images.sh'
       }
     }
 
@@ -77,7 +83,8 @@ pipeline {
           usernameVariable: 'GIT_USERNAME',
           passwordVariable: 'GIT_PASSWORD'
         )]) {
-          sh label: 'Commit & Push (bash)', script: '''
+          sh label: 'Write commit script', script: '''
+            cat > commit-push.sh <<'BASH'
             #!/usr/bin/env bash
             set -euo pipefail
 
@@ -94,7 +101,13 @@ pipeline {
             git commit -m "🔄 Update deployment image tags to ${IMAGE_TAG}"
 
             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mira33ch/prototype-k3s.git ${BRANCH}
+            BASH
+
+            chmod +x commit-push.sh
           '''
+
+         
+          sh label: 'Commit & Push (bash)', script: 'bash ./commit-push.sh'
         }
       }
     }
