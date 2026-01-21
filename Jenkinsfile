@@ -71,41 +71,38 @@ grep -n "image:" frontend-deploy.yaml || true
 }
 
 
-    stage('Commit & Push Changes') {
-      steps {
-        withCredentials([usernamePassword(
-          credentialsId: 'github',
-          usernameVariable: 'GIT_USERNAME',
-          passwordVariable: 'GIT_PASSWORD'
-        )]) {
-          sh label: 'Write commit script', script: '''
-            cat > commit-push.sh <<'BASH'
-            #!/usr/bin/env bash
-            set -euo pipefail
+   stage('Commit & Push Changes') {
+  steps {
+    withCredentials([usernamePassword(
+      credentialsId: 'github',
+      usernameVariable: 'GIT_USERNAME',
+      passwordVariable: 'GIT_PASSWORD'
+    )]) {
 
-            git config --global user.name "jenkins-bot"
-            git config --global user.email "ci-bot@local"
+      writeFile file: 'commit-push.sh', text: """#!/usr/bin/env bash
+set -euo pipefail
 
-            git add backend-deploy.yaml frontend-deploy.yaml mysql-deploy.yaml || true
+git config --global user.name "jenkins-bot"
+git config --global user.email "ci-bot@local"
 
-            if git diff --cached --quiet; then
-              echo "No changes detected, nothing to commit."
-              exit 0
-            fi
+git add backend-deploy.yaml frontend-deploy.yaml mysql-deploy.yaml || true
 
-            git commit -m "🔄 Update deployment image tags to ${IMAGE_TAG}"
+if git diff --cached --quiet; then
+  echo "No changes detected, nothing to commit."
+  exit 0
+fi
 
-            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mira33ch/prototype-k3s.git ${BRANCH}
-            BASH
+git commit -m "🔄 Update deployment image tags to ${IMAGE_TAG}"
 
-            chmod +x commit-push.sh
-          '''
+git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mira33ch/prototype-k3s.git ${BRANCH}
+"""
 
-         
-          sh label: 'Commit & Push (bash)', script: 'bash ./commit-push.sh'
-        }
-      }
+      sh 'chmod +x commit-push.sh'
+      sh 'bash ./commit-push.sh'
     }
+  }
+}
+
   }
 
   post {
