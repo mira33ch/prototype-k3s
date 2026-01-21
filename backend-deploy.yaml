@@ -19,12 +19,12 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://mysql:3306/database
+            - name: SPRING_PROFILES_ACTIVE
+              value: "k8s"
             - name: SPRING_DATASOURCE_USERNAME
-              value: root
+              value: "test"
             - name: SPRING_DATASOURCE_PASSWORD
-              value: ""
+              value: "pass"
 ---
 apiVersion: v1
 kind: Service
