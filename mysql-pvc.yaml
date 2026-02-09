@@ -4,6 +4,7 @@ metadata:
   name: mysql-pvc
   namespace: portfolio
 spec:
+  storageClassName: nfs-client
   accessModes:
     - ReadWriteOnce
   resources:
